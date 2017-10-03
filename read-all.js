@@ -6,22 +6,18 @@ function show(path) {
 		fs.readdir(path, (err, file) => {
 			if(err) fail(err);
 			else {
-				file.forEach(function(item, i) {
-					read(path + item)
-						.then(content => files.push({"name":item, "content":content})
-						.catch(error => console.error(error));
-				})
-				console.log(files);
-				done(files);
+				Promise.all(file.map(item => read(path, item)))
+					.then(concents => done(concents))
+					.catch(error => console.error(error));
 			}
 		});
 	});
 }
-function read(file) {
+function read(path, file) {
 	return new Promise((done, fail)=>{
-		fs.readFile(file, opt, (err, content) => {
+		fs.readFile(path + file, opt, (err, content) => {
 			if(err) fail(err);
-			else done(content);
+			else done({"name":file, "content":content});
 		});
 	});
 }

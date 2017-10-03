@@ -1,6 +1,8 @@
 const file = require('./file-promise');
 const readAll = require('./read-all');
+const pathInfo = require('./path-info');
 
+// часть 1
 file
   .read('./data.txt')
   .then(data => data.toUpperCase())
@@ -8,6 +10,7 @@ file
   .then(filename => console.log(`Создан файл ${filename}`))
   .catch(err => console.error(err));
 
+// часть 2
 function show(file) {
   console.log('-'.repeat(10));
   console.log(`Содержимое файлы ${file.name}:`);
@@ -18,3 +21,28 @@ function show(file) {
 readAll('./logs/')
   .then(files => files.forEach(show))
   .catch(err => console.error(err));
+
+// часть 3
+function showInfo(err, info) {
+  if (err) {
+    console.log('Возникла ошибка при получении информации');
+    return;
+  }
+  switch (info.type) {
+    case 'file':
+      console.log(`${info.path} — является файлом, содержимое:`);
+      console.log(info.content);
+      console.log('-'.repeat(10));
+      break;
+    case 'directory':
+      console.log(`${info.path} — является папкой, список файлов и папок в ней:`);
+      info.childs.forEach(name => console.log(`  ${name}`));
+      console.log('-'.repeat(10));
+      break;
+    default:
+      console.log('Данный тип узла не поддерживается');
+      break;
+  }
+}
+pathInfo(__dirname, showInfo);
+pathInfo(__filename, showInfo);
